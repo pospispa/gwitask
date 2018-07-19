@@ -168,7 +168,8 @@ const (
 )
 
 func constructExpectedJSONOutputOfBinaryTree(height int) string {
-	facets := ""
+	var facets strings.Builder
+	facets.WriteString(`{"result": [`)
 	var firstInRow, lastInRow, facetValue int
 	for i := height; i > 0; i-- {
 		depth := height - i
@@ -176,19 +177,20 @@ func constructExpectedJSONOutputOfBinaryTree(height int) string {
 		lastInRow = int(math.Pow(2, float64(depth+1))) - 1
 		facetValue = int(math.Pow(2, float64(i-1)))
 		isLowestRow := i == lowestRow
-		facets = facets + constructExpectedJSONOutputOfBinaryTreeRow(firstInRow, lastInRow, facetValue, isLowestRow)
+		facets.WriteString(constructExpectedJSONOutputOfBinaryTreeRow(firstInRow, lastInRow, facetValue, isLowestRow))
 	}
-	return `{"result": [` + facets + `]}`
+	facets.WriteString(`]}`)
+	return facets.String()
 }
 
 func constructExpectedJSONOutputOfBinaryTreeRow(firstInRow, lastInRow, facetValue int, isLowestRow bool) string {
-	rowOfFacets := ""
+	var rowOfFacets strings.Builder
 	for j := firstInRow; j <= lastInRow; j++ {
 		if isLowestRow && j == lastInRow {
-			rowOfFacets = rowOfFacets + fmt.Sprintf("{\"facet%05d\": %d}", j, facetValue)
+			rowOfFacets.WriteString(fmt.Sprintf("{\"facet%05d\": %d}", j, facetValue))
 		} else {
-			rowOfFacets = rowOfFacets + fmt.Sprintf("{\"facet%05d\": %d}, ", j, facetValue)
+			rowOfFacets.WriteString(fmt.Sprintf("{\"facet%05d\": %d}, ", j, facetValue))
 		}
 	}
-	return rowOfFacets
+	return rowOfFacets.String()
 }
