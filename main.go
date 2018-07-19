@@ -18,6 +18,7 @@ var (
 const (
 	requestRootElementName = "data"
 	countElementName       = "count"
+	maxContentLength       = 1000000
 )
 
 func main() {
@@ -38,6 +39,12 @@ func challengeHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "POST" {
 		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
 		return
+	}
+	if r.ContentLength == -1 {
+		http.Error(w, "Error: content length required", http.StatusLengthRequired)
+	}
+	if r.ContentLength > maxContentLength {
+		http.Error(w, "Error: content too large", http.StatusRequestEntityTooLarge)
 	}
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
